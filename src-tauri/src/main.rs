@@ -13,10 +13,12 @@ fn open_window(app_handle: tauri::AppHandle) -> () {
       &app_handle,
       "external_window",
       WindowUrl::App("external.html".into())
-    ).menu(Menu::new().add_submenu(Submenu::new(
-        "External Window Option",
-        Menu::new().add_item(CustomMenuItem::new("Hello-from-external", "Hello From External")),
-    ))).build();
+    )
+    // .menu(Menu::new().add_submenu(Submenu::new(
+    //     "External Window Option",
+    //     Menu::new().add_item(CustomMenuItem::new("Hello-from-external", "Hello From External")),
+    // )))
+    .build();
 }
 
 fn main() {
