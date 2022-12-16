@@ -17,12 +17,12 @@ fn open_window(app_handle: tauri::AppHandle) -> () {
     .on_web_resource_request(|request, response| {
         let uri = request.uri();
         match uri {
-            "tauri://localhost/assets/test.js" => {
+            "tauri://localhost/test.js" => {
                 println!("test file requested!");
                 let pwd = std::env::current_dir().unwrap();
                 println!("pwd: {:?}", pwd);
                 let mutable_response = response.body_mut();
-                match std::fs::read(pwd.parent().unwrap().join("src").join("assets").join("test.js")) {
+                match std::fs::read(pwd.parent().unwrap().join("test.js")) {
                     Ok(testfile) => {
                         *mutable_response = testfile;
                         response.set_mimetype(Some(String::from("application/javascript")));
