@@ -14,10 +14,29 @@ fn open_window(app_handle: tauri::AppHandle) -> () {
       "external_window",
       WindowUrl::App("external.html".into())
     )
-    // .menu(Menu::new().add_submenu(Submenu::new(
-    //     "External Window Option",
-    //     Menu::new().add_item(CustomMenuItem::new("Hello-from-external", "Hello From External")),
-    // )))
+    .on_web_resource_request(|request, response| {
+        let uri = request.uri();
+        match uri {
+            "tauri://localhost/assets/test.js" => {
+                println!("test file requested!");
+                let pwd = std::env::current_dir().unwrap();
+                println!("pwd: {:?}", pwd);
+                let mutable_response = response.body_mut();
+                match std::fs::read(pwd.parent().unwrap().join("src").join("assets").join("test.js")) {
+                    Ok(testfile) => {
+                        *mutable_response = testfile;
+                        response.set_mimetype(Some(String::from("application/javascript")));
+                    },
+                    Err(e) => {
+                        println!("Failed to read file: {:?}", e);
+                    }
+                }
+            },
+            _ => {
+                println!("Requested uri: {:?}", uri);
+            }
+        }
+    })
     .build();
 }
 
