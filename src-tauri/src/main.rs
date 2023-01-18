@@ -3,20 +3,23 @@
     windows_subsystem = "windows"
 )]
 
-use tauri::{Menu, WindowBuilder, WindowUrl, Submenu, CustomMenuItem, Manager};
+use tauri::{Menu, WindowBuilder, WindowUrl, Submenu, CustomMenuItem, Manager, PhysicalSize};
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
 fn open_window(app_handle: tauri::AppHandle) -> () {
     println!("Opening window.");
-    let _window = WindowBuilder::new(
+    let window = WindowBuilder::new(
       &app_handle,
       "external_window",
       WindowUrl::App("external.html".into())
     ).menu(Menu::new().add_submenu(Submenu::new(
         "External Window Option",
         Menu::new().add_item(CustomMenuItem::new("Hello-from-external", "Hello From External")),
-    ))).build();
+    ))).build().unwrap();
+
+    println!("Setting window size...");
+    window.set_size(PhysicalSize::new(500,500)).unwrap();
 }
 
 #[tauri::command]
@@ -30,10 +33,20 @@ fn unminimize_window(app_handle: tauri::AppHandle) -> () {
 
 fn main() {
     tauri::Builder::default()
-        .menu(Menu::new().add_submenu(Submenu::new(
-            "Main Window Option",
-            Menu::new().add_item(CustomMenuItem::new("Hello-from-main", "Hello From Main")),
-        )))
+        .setup(|app| {
+            let _main_window = WindowBuilder::new(
+                app,
+                "main",
+                tauri::WindowUrl::App("index.html".into())
+              )
+                .inner_size(1200.0, 880.0)
+                .resizable(true)
+                .fullscreen(false)
+                .title("Reproduce Fullscreen Crash")
+                .center()
+                .build()?;
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![open_window, unminimize_window])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
