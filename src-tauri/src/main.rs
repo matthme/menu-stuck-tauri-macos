@@ -20,6 +20,8 @@ fn open_window(app_handle: tauri::AppHandle) -> () {
 
     println!("Setting window size...");
     window.set_size(PhysicalSize::new(500,500)).unwrap();
+
+    println!("Getting monitor of window: {:?}", window.current_monitor().unwrap());
 }
 
 #[tauri::command]
