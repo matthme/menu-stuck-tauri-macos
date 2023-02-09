@@ -22,6 +22,9 @@ fn open_window(app_handle: tauri::AppHandle) -> () {
     window.set_size(PhysicalSize::new(500,500)).unwrap();
 
     println!("Getting monitor of window: {:?}", window.current_monitor().unwrap());
+    dbg!(window.current_monitor().unwrap().unwrap().name());
+    dbg!(window.primary_monitor().unwrap().unwrap().name());
+    dbg!(window.available_monitors().unwrap().iter().map(|m| m.name()).collect::<Vec<_>>());
 }
 
 #[tauri::command]
